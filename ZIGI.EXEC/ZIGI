@@ -29,6 +29,12 @@
   |                                                            |
   | History:  (most recent on top, see git log for full info)  |
   |                                                            |
+  |            06/05/21 LBD - Refine Commit Prompt             |
+  |            06/03/21 LBD - Add tbsave after tbdelete (SP)   |
+  |                         - Change SHAREAS to REQUIRED       |
+  |                         - Change COMMIT processing         |
+  |            06/01/21 LBD - Add edit macro for readme.md     |
+  |                           edit with md syntax tips         |
   |            05/31/21 LBD - On clone make hlq default to     |
   |                           users prefix or userid           |
   |                         - New READme command to add/edit   |
@@ -1062,6 +1068,7 @@ handle_zigiprim_lcmd_d:
   call pfshow 'reset'         /* restore pfshow setting */
   if drc = 0 & delcf = 'Y' then do
     'tbdelete zigirepo'
+    'TBSave zigirepo replcopy library('isptabl')'
     if delgit = 'N' then do
       cmd = 'cd 'localrep'/'zigirep' && rm -rf .git .gitattributes .zigi'
       x = docmd(cmd)
@@ -2014,8 +2021,9 @@ WWR_handle_fetch:
    | Add/Update README.md file |
    * ------------------------- */
 WWR_Handle_Readme:
-  readme = localdir'/README.md'
-  Address TSO 'oedit -r 80' "'"readme"'"
+  readme = localdir"/README.md"
+  Address ISPExec ,
+  'Edit File(readme) macro(zigiemmd)'
   return
 
   /* -------------------------------- *
@@ -4883,8 +4891,15 @@ Do_Commit:
       'tbskip' cmtab 'number('ctop')'
       'tbdispl' cmtab 'panel(zigicom)'
     end
-    if rc > 4 then leave
+    if rc > 4 then do
+       x = do_commitq()
+       if x > 0 then answer = 'CANCEL'
+       if abbrev('CANCEL',translate(answer),1) = 1
+          then zcmd = 'CANCEL'
+       else zcmd = 'COMMIT'
+       end
     if translate(zcmd) = 'CANCEL' then leave
+    if abbrev('COMMIT',translate(zcmd),2) = 1 then leave
     ctop = ztdtop
     if datatype(right(zcmd,1)) = 'NUM' then
     zcmd = left(zcmd,1) substr(zcmd,2)
@@ -4944,7 +4959,7 @@ Do_Commit:
   if strip(msg1) = null then do
     x = debug('Commit canceled:' zigirep)
     zerrsm = 'Canceled.'
-    zerrlm = 'Commit canceled due to an empty title message.'
+    zerrlm = 'Commit canceled per your request.'
     'setmsg msg(isrz003)'
     'tbend' cmtab
     drop m.
@@ -6670,6 +6685,8 @@ Update_repo_metadata:
           statpath = localrep'/'zigirep'/.zigi/'root.umdi
           statfile = root.umdi
 
+          Address ISPExec ,
+             'vput (debugfil defruid readonly dovedir)'
           mem_delta = zigistat("'"edsn"'" statpath 'C')
           if mem_delta = 0 then mem_delta = null
           Address ISPExec
@@ -8081,6 +8098,19 @@ Do_PopupP:
   return
 
   /* ---------------------------------------- *
+  | Confirm Commit Cancel or Proceed........ |
+  * ---------------------------------------- */
+Do_CommitQ:
+  call pfshow 'off'           /* make sure pfshow is off */
+  answer = null
+  'Addpop row(4) column(16)'
+  'Display Panel(zigicomq)'
+  prc = rc
+  'Rempop'
+  call pfshow 'reset'         /* restore pfshow setting */
+  return prc
+
+  /* ---------------------------------------- *
   | Common routine for normal (3 line) popup |
   * ---------------------------------------- */
 Do_Popup3:
@@ -8121,7 +8151,7 @@ Do_Popup4p:
   * ----------------------------------------------------- */
 GETENV:
   cmd = 'pwd'
-  omvsenv.1 = '_BPX_SHAREAS=YES'
+  omvsenv.1 = '_BPX_SHAREAS=MUST'
   omvsenv.0 = 1
   x = bpxwunix(cmd,,so.,se.,omvsenv.)
   home    = strip(so.1)
@@ -8132,7 +8162,7 @@ GETENV:
 
   rc = bpxwunix(cmd,,env.,se.,omvsenv.)
   envc = env.0
-  call add_env '_BPX_SHAREAS=YES'
+  call add_env '_BPX_SHAREAS=MUST'
   call add_env '_BPX_SPAWN_SCRIPT=YES'
   call add_env 'EXPORT _EDC_ADD_ERRNO2=1'
   call add_env '_EDC_ZERO_RECLEN=Y'
