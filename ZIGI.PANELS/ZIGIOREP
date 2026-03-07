@@ -4,9 +4,9 @@
   $ type(output) intens(low ) caps(off) just(left )
   + type(text) intens(low) skip(on)
   % type(text) intens(high) skip(on)
-  # type(output) hilite(reverse) color(turq) caps(off)
+  # type(text) color(yellow) caps(off)
   [ type(output) caps(off) pas(on) intens(high) color(white) hilite(uscore)
-)Body Window(77,17)
+)Body Window(77,18)
 +
 +Enter Selection:_z        +
 +
@@ -15,12 +15,13 @@
 [Br    +  Change Branch   [GITInfo+ZIGI/Git Info   [Set+     Set Defaults
 [Check+   Check z/OS DSNs [GitLog+ Query git log   [Snapshot+Create Escrow
 [Commit+  Record Changes  [Grep+   Find Strings    [Stash+   Save Workspace
-[Convrepo+Convert non-zigi[info+   Info on Repo    [StashL+  List Stashes
+[Convrepo+Convert non-zigi[Info+   Info on Repo    [StashL+  List Stashes
 [Diff+    Diff            [Merge+  Merge Branches  [Status+  Git Status
 [Extract+ Packaging       [Network+Network Report  [Tag+     Git Tag
 [Fetch+   Fetch           [Pull+   Pull from origin[TagList+ List all Tags
 [Find+    Find in table   [Push+   Push to origin  [View+    OMVS Dir
-[Flow+    Flow Menu       [Readme+ Edit README.md
+[Flow+    Flow Menu       [Readme+  Edit README.md
+               #Special:[Debug+ Enable/View/Disable Debug Logging
 
                            +Or%F3+to cancel
 +
@@ -61,7 +62,8 @@
  &Tag     = 'Tag'
  &TagList = 'TagList'
  &View    = 'View'
-  .help = zigih200
+ &debug   = 'DEbug'
+ .help = zigih200
 )Proc
  if (&zcmd EQ 'LOCATE')
     ver (&lstloc,nb)
@@ -98,8 +100,9 @@
  FIELD(TAG   )  VAR(ZCMD) VAL('TAG')
  FIELD(TAGLIST) VAR(ZCMD) VAL('TAGLIST')
  FIELD(VIEW  )  VAR(ZCMD) VAL('VIEW')
+ FIELD(DEBUG   ) VAR(ZCMD) VAL('DEBUG')
 )End
 /* -------------------------------------------------------------------------- */
 /* ZIGI - the z/OS ISPF Git Interface                                         */
-/* Copyright (C) 2020-2024 GPL V3 - Henri Kuiper, Lionel Dyck, Ray Mullins    */
+/* Copyright (C) 2020-2025 GPL V3 - Henri Kuiper, Lionel Dyck, Ray Mullins    */
 /* -------------------------------------------------------------------------- */
