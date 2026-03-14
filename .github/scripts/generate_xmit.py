@@ -16,14 +16,14 @@ readme = Path('ZIGI.README')
 release = Path('ZIGI.RELEASE')
 install = Path('.github/zigidata/$INSTALL')
 
-outputfile = Path('ZIGI.INSTALL.PDS')
+outputfile = Path('ZIGI.INSTALL.XMI')
 
 tmppds = Path(sys.argv[1])
 
-shutil.copy(lic, posixpath.join(tmppds,"/GPLLIC"))
-shutil.copy(readme, posixpath.join(tmppds,"/$README"))
-shutil.copy(release, posixpath.join(tmppds,"/RELEASE"))
-shutil.copy(install, posixpath.join(tmppds,"/$INSTALL"))
+shutil.copy(lic,tmppds / "GPLLIC")
+shutil.copy(readme,tmppds /" $README")
+shutil.copy(release, tmppds / "RELEASE")
+shutil.copy(install, tmppds / "$INSTALL")
 
 create_xmi(execs, output_file=tmppds + "/EXEC")
 create_xmi(panels, output_file=tmppds + "/PANELS")
