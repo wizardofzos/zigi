@@ -37,3 +37,4 @@ jobs:
         name: ${{ github.ref_name }}
         body_path: ZIGI.RELEASE
         files: ZIGI.INSTALL.XMI
+        draft: true
