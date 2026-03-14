@@ -21,7 +21,7 @@ outputfile = Path('ZIGI.INSTALL.XMI')
 tmppds = Path(sys.argv[1])
 
 shutil.copy(lic,tmppds / "GPLLIC")
-shutil.copy(readme,tmppds /" $README")
+shutil.copy(readme,tmppds / "$README")
 shutil.copy(release, tmppds / "RELEASE")
 shutil.copy(install, tmppds / "$INSTALL")
 
