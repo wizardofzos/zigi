@@ -7,6 +7,7 @@ import shutil
 import posixpath
 
 # We ZIGI.INSTALL.PDS (as an XMIT)
+# Change the branch to master and go tag only
 
 execs = Path('ZIGI.EXEC')
 panels = Path('ZIGI.PANELS')
