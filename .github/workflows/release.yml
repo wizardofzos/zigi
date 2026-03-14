@@ -2,8 +2,11 @@ name: Generate XMIT
 
 on:
   push:
-    branches: [ workflows ]
-  workflow_dispatch:
+    tags:
+      - "v*"
+      
+permissions:
+  contents: write
 
 jobs:
   process:
