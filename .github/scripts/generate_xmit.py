@@ -19,10 +19,10 @@ outputfile = Path('ZIGI.INSTALL.PDS')
 
 tmppds = Path(sys.argv[1])
 
-shutil.copy(lic, tmppds + "/GPLLIC")
-shutil.copy(readme,tmppds + "/$README")
-shutil.copy(release,tmppds + "/RELEASE")
-shutil.copy(install,tmppds + "/$INSTALL")
+shutil.copy(lic, tmppds + Path("/GPLLIC"))
+shutil.copy(readme,tmppds + Path("/$README"))
+shutil.copy(release,tmppds + Path("/RELEASE"))
+shutil.copy(install,tmppds + Path("/$INSTALL"))
 
 create_xmi(execs, output_file=tmppds + "/EXEC")
 create_xmi(panels, output_file=tmppds + "/PANELS")
