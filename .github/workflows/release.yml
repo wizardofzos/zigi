@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "v*"
-      
+
 permissions:
   contents: write
 
@@ -33,11 +33,14 @@ jobs:
         mkdir -p $RUNNER_TEMP/ZIGI.INSTALL.PDS
         python .github/scripts/generate_xmit.py $RUNNER_TEMP/ZIGI.INSTALL.PDS
 
+    - name: Process release notes
+      run: |
+        python .github/scripts/process_release.py ZIGI.RELEASE RELEASE_BODY.md
+
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
-        body_path: ZIGI.RELEASE
+        body_path: RELEASE_BODY.md
         files: ZIGI.INSTALL.XMI
-        draft: true
