@@ -80,9 +80,12 @@ with open(input_file) as f:
 # Our ZIGI.RELEASE dataset/file always has all releases in it.
 # Releases are separated with a liek containing 77 '-' characters
 # So we first find that
-index = [idx for idx, s in enumerate(text) if 77*'-' in s][0]
+stop = [idx for idx, s in enumerate(text) if 77*'-' in s][0]
+# For the GitHub release we also skip the first part
+# so we start on the line where it says "ZIGI Release Notes"
+start = [idx for idx, s in enumerate(text) if 'ZIGI Release Notes' in s][0]
 # Now this release is 
-this_release_text = ''.join(text[:index])
+this_release_text = ''.join(text[start:stop])
 this_release = release_to_markdown(this_release_text)
 
 
