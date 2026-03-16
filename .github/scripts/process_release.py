@@ -3,69 +3,71 @@ from datetime import datetime
 
 import re
 
+import re
+
 def release_to_markdown(text: str) -> str:
     lines = text.splitlines()
     out = []
-    prev_blank = True
+    current_bullet = None
 
-    for line in lines:
-        line = line.rstrip()
+    for raw in lines:
+        line = raw.rstrip()
 
         # Remove decorative borders
-        if re.match(r'^[=*|\-]{5,}', line):
+        if re.match(r'^\s*[\*\-=|]{5,}', line):
             continue
 
-        # Remove boxed lines
-        if line.startswith("|") and line.endswith("|"):
-            line = line.strip("| ").strip()
+        # Strip box edges
+        if line.strip().startswith("|") and line.strip().endswith("|"):
+            line = line.strip()[1:-1].strip()
 
-        # Detect centered title
-        if "ZIGI Release Notes" in line:
-            out.append("# ZIGI Release Notes")
+        line = line.rstrip()
+
+        # Detect title
+        if "Release Notes" in line:
+            out.append("# " + line.strip())
             continue
 
         # Detect version
-        m = re.search(r"Version\s+([0-9.]+)", line)
+        m = re.search(r"Version\s+([\d.]+)", line)
         if m:
             out.append(f"## Version {m.group(1)}")
             continue
 
-        # Section headers
+        # Detect major sections
         if "New Features and Functions" in line:
             out.append("\n## New Features and Functions\n")
             continue
 
-        if line.strip().endswith("Updates:"):
-            section = line.strip().replace(":", "")
-            out.append(f"\n### {section}\n")
-            continue
-
-        # Key changes
+        # Detect Key changes
         if line.strip().startswith("Key changes"):
             out.append("\n### Key Changes\n")
+
+            # extract first bullet
+            m = re.search(r"-\s+(.*)", line)
+            if m:
+                current_bullet = m.group(1)
+                out.append(f"- {current_bullet}")
             continue
 
-        # Member style list "* member - description"
-        m = re.match(r"\*\s+(\S+)\s+-\s+(.*)", line)
-        if m:
-            out.append(f"- **{m.group(1)}**  \n  - {m.group(2)}")
-            continue
-
-        # Bullet list "-"
+        # Detect bullet
         m = re.match(r"\s*-\s+(.*)", line)
         if m:
-            out.append(f"- {m.group(1)}")
+            current_bullet = m.group(1)
+            out.append(f"- {current_bullet}")
             continue
 
-        # Empty lines
-        if not line.strip():
-            if not prev_blank:
-                out.append("")
-            prev_blank = True
+        # Detect continuation line
+        if line.startswith(" ") and current_bullet:
+            cont = line.strip()
+            out[-1] = out[-1] + " " + cont
             continue
 
-        prev_blank = False
-        out.append(line.strip())
+        # Reset bullet context
+        current_bullet = None
+
+        if line.strip():
+            out.append(line.strip())
 
     return "\n".join(out)
 
